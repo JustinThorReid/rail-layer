@@ -7,9 +7,9 @@ local Message       = require "scripts.MQ"
 --- @param train LuaTrain
 --- @param radius number
 --- @return Message messages error messages on failure
-local function revive_power_poles(train, radius)
+local function revive_power_poles(train)
   if not experimental.power_poles_enable.value then return end
-
+  local radius = experimental.power_poles_radius.value
   local stock_end = train.speed > 0 and train.front_stock or train.back_stock
   if not stock_end then return end
   local surface = stock_end.surface
