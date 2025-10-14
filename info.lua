@@ -1,5 +1,5 @@
 mod_name = "rail-layer"
-mod_version = "0.0.6"
+mod_version = "0.0.8"
 
 require"utils.checks"
 
