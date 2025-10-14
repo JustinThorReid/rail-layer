@@ -1,5 +1,5 @@
 local remove_items = require("scripts.remove_items")
-local insert_items = require("scripts.insert_items")
+local Message            = require "scripts.MQ"
 
 ---@param entity LuaEntity|nil
 ---@param inventories LuaInventory[]|nil

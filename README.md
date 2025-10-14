@@ -38,7 +38,10 @@ Perfect for building large-scale railways without construction robots.
 
 ## Things To Do
 
+- **Alerts**: proper alerts when something cannot be built.
+- **Stations**: building stations
 - **Elevated Rails**: building rail support and supporting rails
+- **Automatic mode**: the train go to his supply station and wander alone on the rails to build the railway network (this is really a big feature)
 
 ## License
 

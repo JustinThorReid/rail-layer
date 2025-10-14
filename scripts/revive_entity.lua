@@ -1,52 +1,44 @@
-local remove_items = require("scripts.remove_items")
+local remove_items       = require("scripts.remove_items")
 local deconstruct_entity = require("scripts.deconstruct_entity")
-local revive_tile = require("scripts.revive_tile")
+local revive_tile        = require("scripts.revive_tile")
+local MQ            = require "scripts.MQ"
+
+local function items_to_place_this(ghost)
+  local items = {}
+  for _, item in pairs(ghost.ghost_prototype.items_to_place_this or {}) do
+    table.insert(items, { name = item.name, count = item.count, quality = ghost.quality })
+  end
+  return items
+end
+
 
 ---@param ghost LuaEntity|nil
 ---@param inventories LuaInventory[]|nil
----@return string|nil error message on failure
+---@return Message messages error messages on failure
 local function revive_entity(ghost, inventories)
-  if not ghost then return "rail-layer-error.no-entity-to-place" end
-  local quality = ghost.quality or "normal"
+  local mq = MQ:new()
+  inventories = inventories or {}
+  if not ghost then return mq end
+  local area = ghost.bounding_box
 
   -- deconstruct entities marked for deconstruction colliding with this ghost
-  local to_be_deconstructed = ghost.surface.find_entities_filtered {
-    area = ghost.bounding_box,
-    to_be_deconstructed = true
-  }
-
-  for _, entity in pairs(to_be_deconstructed) do
-    local msg = deconstruct_entity(entity, inventories)
-    if msg then global_msg = msg end
-  end
+  local to_deconstruct = ghost.surface.find_entities_filtered { area = area, to_be_deconstructed = true }
+  for _, entity in pairs(to_deconstruct) do mq:add(deconstruct_entity(entity, inventories)) end
 
   -- revive ghost tiles needed for this ghost
-  local tile_ghosts = ghost.surface.find_entities_filtered {
-    type = "tile-ghost",
-    area = ghost.bounding_box,
-    force = ghost.force
-  }
+  local tiles = ghost.surface.find_entities_filtered { type = "tile-ghost", area = area, force = ghost.force }
+  for _, ghost in pairs(tiles) do mq:add(revive_tile(ghost, inventories)) end
 
-  for _, tile_ghost in pairs(tile_ghosts) do
-    msg = revive_tile(tile_ghost, inventories)
-    if msg then global_msg = msg end
-  end
-
-  local items = {}
-  if inventories then
-    for _, item in pairs(ghost.ghost_prototype.items_to_place_this or {}) do
-      table.insert(items, { name = item.name, count = item.count, quality = quality })
-    end
-    local can_remove = not inventories or remove_items(inventories, items, true)
-    if not can_remove then return "rail-layer.no-suficient-items" end
-  end
+  local items = #inventories > 0 and items_to_place_this(ghost) or {}
+  mq:add(remove_items(inventories, items, true))
+  if #mq > 0 then return mq end
 
   local collide, revived, proxy = ghost.revive { raise_revive = true }
-  if not revived then return "rail-layer.revive-error" end
+  if not revived then return mq:add "rail-layer.revive-error" end
 
-  if inventories then
-    remove_items(inventories, items)
-  end
+  remove_items(inventories, items)
+
+  return mq
 end
 
 return revive_entity

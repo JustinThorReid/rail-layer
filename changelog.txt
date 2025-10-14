@@ -1,7 +1,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.6
-Date: ????
+Date: 2025-10-14
   Changes:
+    - Major refactor of the codebase
+    - Build train stops
+    - Build build more straight rails on rail branches
+    - WIP support for alerts when rails cannot be placed, a message is printed in chat
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.5
 Date: 2025-09-29

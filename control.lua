@@ -1,4 +1,3 @@
 if script.active_mods["gvv"] then require("__gvv__.gvv")() end
-
-require"shared"
-require"events"
+require("utils.Stage").set("control")
+require"shared.modules"

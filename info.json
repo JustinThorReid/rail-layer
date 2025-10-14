@@ -5,7 +5,10 @@
   "homepage": "https://github.com/YPetremann/rail-layer",
   "author": "Thaui",
   "description": "Add a locomotive that place ghost rails and signals.",
-  "dependencies": [],
+  "dependencies": [
+    "base",
+    "(?) elevated-rails"
+  ],
   "factorio_version": "2.0",
   "package": {
     "readme": "README.md",

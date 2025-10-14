@@ -1,5 +1,2 @@
-require"shared"
-require"prototypes.technology.rail-layer"
-require"prototypes.recipe.rail-layer"
-require"prototypes.item.rail-layer"
-require"prototypes.locomotive.rail-layer"
+require("utils.Stage").set("data")
+require"shared.modules"
