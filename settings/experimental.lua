@@ -33,9 +33,8 @@ local experimental = {
     type = "bool-setting",
     setting_type = "runtime-global",
     name = mod_prefix .. "automatic_enable",
-    default_value = false,
+    default_value = true,
     order="w-a",
-    hidden =true,
   },
 
   elevated_rails_enable = Setting.runtime {

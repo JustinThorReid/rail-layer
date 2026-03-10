@@ -2,7 +2,9 @@ local event = {}
 
 local handlers = {}
 local function global_handler(event)
-  for _, handler in pairs(handlers) do handler(event) end
+  local tick_handlers = handlers[event.nth_tick]
+  if not tick_handlers then return end
+  for _, handler in ipairs(tick_handlers) do handler(event) end
 end
 
 local function global_register(tick, handler)

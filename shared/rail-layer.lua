@@ -1,6 +1,7 @@
 local meld                  = require "meld"
 local Data                  = require "utils.Data"
 local script_trigger_effect = require "utils.events.script_trigger_effect"
+local nth_tick              = require "utils.events.nth_tick"
 
 local Message               = require "scripts.MQ"
 local experimental          = require "settings.experimental"
@@ -8,6 +9,19 @@ local revive_rails          = require "scripts.revive_rails"
 local revive_signals        = require "scripts.revive_signals"
 local revive_train_stops    = require "scripts.revive_train_stops"
 local revive_power_poles    = require "scripts.revive_power_poles"
+local _auto_advance         = require "scripts.auto_advance"
+local auto_advance          = _auto_advance.auto_advance
+local poll_stopped_trains   = _auto_advance.poll_stopped_trains
+
+script_trigger_effect.register("rail-layer-stop", function(event)
+  local rail_layer = event.cause_entity
+  if not rail_layer then return end
+  local train = rail_layer.train
+  if not train then return end
+  auto_advance(train)
+end)
+
+nth_tick.register(300, poll_stopped_trains)
 
 script_trigger_effect.register("rail-layer-build", function(event)
   local rail_layer = event.cause_entity
@@ -60,14 +74,14 @@ end
 local entity = Data.copy.locomotive.locomotive
 meld(entity, {
   name = "rail-layer",
-  icon = "__rail-layer__/graphics/icons/rail-layer.png",
+  icon = mod_directory .. "/graphics/icons/rail-layer-fork.png",
   color = { r = 1, g = 0.75, b = 0 },
   default_copy_color_from_train_stop = false,
   allow_manual_color = false,
   max_speed = 0.25,
   drive_over_tie_trigger_minimal_speed = 0,
   tie_distance = 1,
-  factoriopedia_simulation = { init = "require(\"__rail-layer__/factoriopedia/rail-layer\")" },
+  factoriopedia_simulation = { init = "require(\"" .. mod_directory .. "/factoriopedia/rail-layer\")" },
   crash_trigger = meld.invoke(add_trigger { type = "script", effect_id = "rail-layer-crash" }),
   stop_trigger = meld.invoke(add_trigger { type = "script", effect_id = "rail-layer-stop" }),
   drive_over_tie_trigger = meld.invoke(add_trigger { type = "script", effect_id = "rail-layer-build" }),
@@ -78,7 +92,7 @@ meld(entity, {
 local item = Data.copy["item-with-entity-data"].locomotive
 meld(item, {
   name = "rail-layer",
-  icon = "__rail-layer__/graphics/icons/rail-layer.png",
+  icon = mod_directory .. "/graphics/icons/rail-layer-fork.png",
   place_result = entity.name,
 })
 meld(entity, { minable = { result = item.name } })
@@ -104,7 +118,7 @@ local technology = Data.copy.technology["automated-rail-transportation"]
 meld(technology, {
   name = "rail-layer",
   effects = { { type = "unlock-recipe", recipe = recipe.name } },
-  icon = "__rail-layer__/graphics/technology/rail-layer.png"
+  icon = mod_directory .. "/graphics/technology/rail-layer-fork.png"
 })
 
 

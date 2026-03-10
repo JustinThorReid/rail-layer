@@ -1,7 +1,7 @@
 {
-  "name": "rail-layer",
+  "name": "rail-layer-fork",
   "version": "0.0.9",
-  "title": "Rail Layer",
+  "title": "Rail Layer Fork",
   "homepage": "https://github.com/YPetremann/rail-layer",
   "author": "Thaui",
   "description": "Add a locomotive that place ghost rails and signals.",

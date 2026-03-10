@@ -1,0 +1,3 @@
+# Concept: BlueprintInventory
+
+**Type:** `table`
