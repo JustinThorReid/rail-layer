@@ -4,10 +4,6 @@ local revive_entity = require "scripts.revive_entity"
 
 local RAIL_NAMES = { "straight-rail", "curved-rail-a", "curved-rail-b", "half-diagonal-rail" }
 
-local function log_train(train, msg)
-  train.carriages[1].force.print("[Rail Layer] " .. msg)
-end
-
 local function dist2(a, b)
   local dx = a.x - b.x
   local dy = a.y - b.y
@@ -108,13 +104,15 @@ end
 local function try_advance(train)
   local surface = train.front_end.rail.surface
 
-  -- Priority 1: ghost territory reachable within 10 rail steps.
+  -- Priority 1: ghost territory reachable within 10 rail steps ahead.
+  -- Only check front_end: looking backward via back_end can find the
+  -- *rejoin* point of a ghost loop (the exit, not the entrance), causing
+  -- the loop to be built in reverse with signals facing the wrong way.
   local front_f = local_frontier(train.front_end, surface)
-  local back_f  = local_frontier(train.back_end,  surface)
 
-  if front_f or back_f then
-    local frontier  = front_f or back_f
-    local start_end = front_f and train.front_end or train.back_end
+  if front_f then
+    local frontier  = front_f
+    local start_end = train.front_end
 
     local inventories = {}
     for _, wagon in ipairs(train.cargo_wagons) do
@@ -137,7 +135,6 @@ local function try_advance(train)
         temporary       = true,
         wait_conditions = {},
       }
-      log_train(train, "advancing to frontier rail.")
     end
     -- If new_frontier is nil: no more ghosts remain, nothing to schedule.
     -- The current stop completes naturally and the train returns to its schedule.
@@ -167,7 +164,6 @@ local function try_advance(train)
     temporary       = true,
     wait_conditions = {},
   }
-  log_train(train, "advancing to frontier rail.")
   return true
 end
 
